@@ -3,7 +3,7 @@
 
 ## Instructions to Setup and Run Project
 
-1. Visit [this GitHub repository](https://github.com/ckane-sbu-s25-cse316/project-s25-redditpremium4) and fork a copy to your GitHub repository.
+1. Visit [this GitHub repository](https://github.com/Jyeung221060544/Reddit-Replica) and fork a copy to your GitHub repository.
 2. Clone the project onto your local machine. Make sure it is in a place where it is easily accessible.   
 3. The following dependencies are necessary for you to run this application successfully:  
    - Node.js (React)
@@ -25,40 +25,14 @@
     - On the server-side, `cd server`
         - Install the following dependencies: `npm install`, `npm install express mongoose bcrypt`
         - After installing the necessary dependencies, run 
+            - `npm install`
+            - `npm install express`
+            - `npm install mongoose`
+            - `npm install nodemon`
+            - `npm install bcrypt`
             - `node init.js mongodb://127.0.0.1:27017/phreddit [Admin's Email Address] [Admin's Display Name] [Admin's Password]`
             - `nodemon server/server.js`
             - Note: Whenever you want to reset the database, run `node reset.js` and then repeat the 2 steps above!
             - Note: Email addresses must ended in @gmail.com.
 6. Go back to client `cd client` and run `npm start`.
 7. You are all ready to go! Have reddting with premium!
-
-
-
-## Team Member 1 Contribution
-### Jason Yeung
-1. UML diagrams
-2. Implemented all helper function logics in client/helperfunctions.js
-3. Implemented the following:
-    - Create Account
-    - Login Function
-    - Guest Functions
-    - Upvotes
-    - Sort by Communities/Newest/Oldest/Active Posts
-    - Joining and Leaving Community
-    - Search Functions/Algorithms
-    - Create Post/Community/Comment
-4. Setup Project
-## Team Member 2 Contribution
-### Vivian Zhu
-
-1. Defined schemas
-2. Implemented all CSS, React Components, and Pages (frontend design)
-3. Implemented the following:
-    - Logout Function
-    - Guest Functions
-    - Downvotes
-    - User Profile Page View
-    - Confirm Windows
-    - Edit Post/Community/Comment
-    - Delete Post/Community/Comment
-4. README.md
