@@ -749,6 +749,91 @@ app.delete("/delete/post/:id", async (req, res) => {
     }
 });
 
+// --- Admin reset & reseed (protected) ---
+app.post('/admin/reset', async (req, res) => {
+  try {
+    if (req.headers['x-admin-token'] !== process.env.ADMIN_RESET_TOKEN) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // 1) wipe all data
+    const del = await Promise.all([
+      Community.deleteMany({}),
+      Post.deleteMany({}),
+      Comment.deleteMany({}),
+      LinkFlair.deleteMany({}),
+      User.deleteMany({}),
+    ]);
+
+    // 2) reseed minimal data (admin + a flair + a community + a post)
+    const [firstName, ...rest] = (process.env.SEED_ADMIN_NAME || 'Admin').split(' ');
+    const lastName = rest.join(' ') || 'User';
+    const email = process.env.SEED_ADMIN_EMAIL || 'admin@gmail.com';
+    const plainPw = process.env.SEED_ADMIN_PASSWORD || 'ChangeMe123!';
+    const pwHash = await bcrypt.hash(plainPw, 10);
+
+    const admin = await new User({
+      firstName,
+      lastName,
+      communityIDs: [],
+      postIDs: [],
+      commentIDs: [],
+      startDate: new Date('2000-01-01T05:00:00Z'),
+      reputation: 1000,
+      displayName: process.env.SEED_ADMIN_NAME || 'Admin',
+      email,
+      hashPassword: pwHash,
+      isAdmin: true,
+      upvotedComments: [],
+      downvotedComments: [],
+      upvotedPosts: [],
+      downvotedPosts: []
+    }).save();
+
+    const flair = await new LinkFlair({ content: 'General' }).save();
+
+    const community = await new Community({
+      name: 'Admin Channel',
+      description: 'For Testing',
+      postIDs: [],
+      startDate: new Date('2017-01-04T13:32:00Z'),
+      members: [admin._id],
+      memberCount: 1,
+      createdBy: admin._id
+    }).save();
+
+    const post = await new Post({
+      title: 'Admin',
+      content: 'Admin testing',
+      linkFlairID: flair._id,
+      postedBy: admin._id,
+      postedDate: new Date('2023-09-09T18:24:00Z'),
+      commentIDs: [],
+      views: 0,
+      votes: 0
+    }).save();
+
+    // wire refs
+    await User.findByIdAndUpdate(admin._id, { $push: { communityIDs: community._id, postIDs: post._id } });
+    await Community.findByIdAndUpdate(community._id, { $push: { postIDs: post._id } });
+
+    res.json({
+      dropped: {
+        communities: del[0].deletedCount,
+        posts: del[1].deletedCount,
+        comments: del[2].deletedCount,
+        flairs: del[3].deletedCount,
+        users: del[4].deletedCount
+      },
+      admin: { email, displayName: admin.displayName },
+      community: { id: community._id, name: community.name },
+      post: { id: post._id, title: post.title }
+    });
+  } catch (e) {
+    console.error('Admin reset failed:', e);
+    res.status(500).json({ error: 'Reset failed' });
+  }
+});
 
 
 
