@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { countPostComments, findCommunity, findFlair, getTimeAgo, arrayOfPostComments, countCommentDepth, useParsedCommentContent, useParsedPostContent, loginRestrictionError, canVote } from "../helperFunctions";
 import { PhredditContext } from "./context";
-import axios from 'axios';
+import api from '../api';
 
 function PostPageView() {
   const {
@@ -129,7 +129,7 @@ function PostBanner() {
   
   const updateVotes = async (post, repUser, newVotes, direction) => {
     console.log("Update Server");
-    await axios.post("http://127.0.0.1:8000/posts/updateVotes", {
+    await api.post("/posts/updateVotes", {
       repUserID: repUser._id,
       direction: direction,
       votes: newVotes,
@@ -138,9 +138,9 @@ function PostBanner() {
       userDownVotes: user.downvotedPosts,
       userID: user._id
     });
-    const response = await axios.get(`http://127.0.0.1:8000/posts/${post._id}`);
+    const response = await api.get(`/posts/${post._id}`);
     const updatedPost = response.data;
-    const postArrayRes = await axios.get("http://127.0.0.1:8000/get/posts");
+    const postArrayRes = await api.get("/get/posts");
     setPosts(postArrayRes.data);
     // console.log(updatedPost);
     showPost(updatedPost);
@@ -319,7 +319,7 @@ function Comment({comment, depth}) {
   
   const updateVotes = async (comment, repUser, newVotes, direction) => {
     console.log("Update Server");
-    await axios.post("http://127.0.0.1:8000/comments/updateVotes", {
+    await api.post("/comments/updateVotes", {
       repUserID: repUser._id,
       direction: direction,
       votes: newVotes,

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { PhredditContext } from "./context";
-import axios from 'axios';
+import api from '../api';
 import ConfirmWindow from "./confirm";
 
 function EditCommunity() {
@@ -176,7 +176,7 @@ function SubmitButton() {
               return;
         } else {
             try {
-                const response = await axios.post("http://127.0.0.1:8000/editcommunity", {
+                const response = await api.post("/editcommunity", {
                     name: community_name,
                     description: community_description,
                     communityID: editCommunity._id
@@ -185,10 +185,10 @@ function SubmitButton() {
                 const newCommunity = response.data;
                 setEditCommunity(newCommunity);
                 
-                const updatedCommunities = await axios.get("http://127.0.0.1:8000/get/communities");
+                const updatedCommunities = await api.get("/get/communities");
                 setCommunities(updatedCommunities.data);
 
-                const updatedUserResponse = await axios.get(`http://127.0.0.1:8000/user/${user._id}`);
+                const updatedUserResponse = await api.get(`/user/${user._id}`);
                 setUser(updatedUserResponse.data);
 
                 showCommunityPage(newCommunity);
@@ -239,10 +239,10 @@ function DeleteButton() {
 
     const deleteCommunity = async () => {
         try {
-            const res = await axios.delete(`http://127.0.0.1:8000/delete/community/${editCommunity._id}`);
+            const res = await api.delete(`/delete/community/${editCommunity._id}`);
             if (res.status === 200) {
-                const updatedCommunities = await axios.get("http://127.0.0.1:8000/get/communities");
-                const updatedUser = await axios.get(`http://127.0.0.1:8000/user/${user._id}`);
+                const updatedCommunities = await api.get("/get/communities");
+                const updatedUser = await api.get(`/user/${user._id}`);
                 setCommunities(updatedCommunities.data);
                 setUser(updatedUser.data);
                 handleShowUserProfilePage();

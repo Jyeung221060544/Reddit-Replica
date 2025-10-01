@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { PhredditContext } from "./context";
 import { arrayOfPostCommentsTime } from "../helperFunctions";
-import axios from 'axios';
+import api from '../api';
 import ConfirmWindow from "./confirm";
 
 function CreatePostPageView() {
@@ -223,7 +223,7 @@ function SubmitButton() {
                 } else if(post_flair != "no-flair" && new_post_flair == ""){
                     postFlair = linkFlairs[linkFlairIDs.indexOf(post_flair)];
                 } else if(post_flair == "no-flair" && new_post_flair != ""){
-                    const flairRes = await axios.post("http://127.0.0.1:8000/addlinkflair", {
+                    const flairRes = await api.post("/addlinkflair", {
                         content: new_post_flair
                     });
                     setLinkFlairs(prev => [...prev, flairRes.data]);
@@ -231,7 +231,7 @@ function SubmitButton() {
                     postFlair = flairRes.data;
                 } 
     
-                const postRes = await axios.post("http://127.0.0.1:8000/addpost", {
+                const postRes = await api.post("/addpost", {
                     title: post_title,
                     content: post_content,
                     linkFlairID: postFlair?._id,
@@ -241,7 +241,7 @@ function SubmitButton() {
                     userID: user._id
                 });
     
-                const allPosts = await axios.get("http://127.0.0.1:8000/get/posts");
+                const allPosts = await api.get("/get/posts");
                 const posts = allPosts.data;
     
                 setPosts(posts);
@@ -254,12 +254,12 @@ function SubmitButton() {
                     return Math.max(...postComments2, 0) - Math.max(...postComments1, 0);
                 }));
     
-                const updatedCommunities = await axios.get("http://127.0.0.1:8000/get/communities");
+                const updatedCommunities = await api.get("/get/communities");
                 setCommunities(updatedCommunities.data);
     
                 const [usersRes, updatedUserResponse] = await Promise.all([
-                    axios.get("http://127.0.0.1:8000/get/users"),
-                    axios.get(`http://127.0.0.1:8000/user/${user._id}`)
+                    api.get("/get/users"),
+                    api.get(`/user/${user._id}`)
                   ]);
                 setUsers(usersRes.data);
                 setUser(updatedUserResponse.data);

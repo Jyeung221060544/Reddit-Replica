@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { PhredditContext } from "./context";
-import axios from 'axios';
+import api from '../api';
 import ConfirmWindow from "./confirm";
 function CreateCommunityPageView() {
     const {
@@ -129,7 +129,7 @@ function SubmitButton() {
             return;
         } else {
             try {
-                const response = await axios.post("http://127.0.0.1:8000/addcommunity", {
+                const response = await api.post("/addcommunity", {
                     name: community_name,
                     description: community_description,
                     members: [user],
@@ -142,8 +142,8 @@ function SubmitButton() {
                 setCommunities(prev => [...prev, newCommunity]);
                 showCommunityPage(newCommunity);
                 const [usersRes, updatedUserResponse] = await Promise.all([
-                    axios.get("http://127.0.0.1:8000/get/users"),
-                    axios.get(`http://127.0.0.1:8000/user/${user._id}`)
+                    api.get("/get/users"),
+                    api.get(`/user/${user._id}`)
                   ]);
                 setUsers(usersRes.data);
                 setUser(updatedUserResponse.data);

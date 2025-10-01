@@ -1,7 +1,7 @@
 import React, { useContext, useState,useEffect } from "react";
 import { PhredditContext } from "./context";
 import { arrayOfPostCommentsTime, findCommunityObject, findFlair } from "../helperFunctions";
-import axios from 'axios';
+import api from '../api';
 import ConfirmWindow from "./confirm";
 
 function EditPost() {
@@ -322,7 +322,7 @@ function SubmitButton({ flair, communityID }) {
                 } else if(post_flair != "no-flair" && new_post_flair == ""){
                     postFlair = linkFlairs[linkFlairIDs.indexOf(post_flair)];
                 } else if(post_flair == "no-flair" && new_post_flair != ""){
-                    const flairRes = await axios.post("http://127.0.0.1:8000/addlinkflair", {
+                    const flairRes = await api.post("/addlinkflair", {
                         content: new_post_flair
                     });
                     setLinkFlairs(prev => [...prev, flairRes.data]);
@@ -330,7 +330,7 @@ function SubmitButton({ flair, communityID }) {
                     postFlair = flairRes.data;
                 } 
     
-                const postRes = await axios.post("http://127.0.0.1:8000/editpost", {
+                const postRes = await api.post("/editpost", {
                     title: post_title,
                     content: post_content,
                     linkFlairID: postFlair,
@@ -340,7 +340,7 @@ function SubmitButton({ flair, communityID }) {
                 });
                 setEditPost(postRes.data);
     
-                const allPosts = await axios.get("http://127.0.0.1:8000/get/posts");
+                const allPosts = await api.get("/get/posts");
                 const posts = allPosts.data;
     
                 setPosts(posts);
@@ -353,13 +353,13 @@ function SubmitButton({ flair, communityID }) {
                     return Math.max(...postComments2, 0) - Math.max(...postComments1, 0);
                 }));
     
-                const updatedCommunities = await axios.get("http://127.0.0.1:8000/get/communities");
+                const updatedCommunities = await api.get("/get/communities");
                 setCommunities(updatedCommunities.data);
 
-                // const updatedUsers = axios.get("http://127.0.0.1:8000/get/users");
+                // const updatedUsers = api.get("/get/users");
                 // setUsers(updatedUsers.data);
 
-                const updatedUserResponse = await axios.get(`http://127.0.0.1:8000/user/${user._id}`);
+                const updatedUserResponse = await api.get(`/user/${user._id}`);
                 setUser(updatedUserResponse.data);
                 
                 handleShowHomePage();
@@ -413,13 +413,13 @@ function DeleteButton() {
     const [showConfirm, setShowConfirm] = useState(false);
     const deletePost = async () => {
         try {
-            const res = await axios.delete(`http://127.0.0.1:8000/delete/post/${editPost._id}`);
+            const res = await api.delete(`/delete/post/${editPost._id}`);
             if (res.status === 200) {
 
                 const [postsRes, communitiesRes, userRes] = await Promise.all([
-                    axios.get("http://127.0.0.1:8000/get/posts"),
-                    axios.get("http://127.0.0.1:8000/get/communities"),
-                    axios.get(`http://127.0.0.1:8000/user/${user._id}`),
+                    api.get("/get/posts"),
+                    api.get("/get/communities"),
+                    api.get(`/user/${user._id}`),
                 ]);
 
                 const posts = postsRes.data;

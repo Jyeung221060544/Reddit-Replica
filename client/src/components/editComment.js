@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { PhredditContext } from "./context";
-import axios from 'axios';
+import api from '../api';
 import ConfirmWindow from "./confirm";
 
 function EditComment() {
@@ -134,7 +134,7 @@ function SubmitButton({ commentID }) {
 
         } else {
             try {
-                const response = await axios.post("http://127.0.0.1:8000/editcomment", {
+                const response = await api.post("/editcomment", {
                     content: comment_content,
                     commentID: commentID
                 });
@@ -142,15 +142,15 @@ function SubmitButton({ commentID }) {
                 const newComment = response.data;
                 setEditComment(newComment);
 
-                const updatedComments = await axios.get("http://127.0.0.1:8000/get/comments");
+                const updatedComments = await api.get("/get/comments");
                 setComments(updatedComments.data);
                 setCommentIDs(updatedComments.data.map(comment => comment._id));
 
-                const updatedUserResponse = await axios.get(`http://127.0.0.1:8000/user/${user._id}`);
+                const updatedUserResponse = await api.get(`/user/${user._id}`);
                 setUser(updatedUserResponse.data);
 
                 if(!editUser){
-                    const updatedPostResponse = await axios.get(`http://127.0.0.1:8000/posts/${post._id}`);
+                    const updatedPostResponse = await api.get(`/posts/${post._id}`);
                     setPost(updatedPostResponse.data);
                     showPost(updatedPostResponse.data);
                 } else {
@@ -205,9 +205,9 @@ function DeleteButton() {
     
     const deleteComment = async () => {
         try {
-            await axios.delete(`http://127.0.0.1:8000/delete/comment/${editComment._id}`);
-            const updatedUser = await axios.get(`http://127.0.0.1:8000/user/${user._id}`);
-            const updatedPosts = await axios.get("http://127.0.0.1:8000/get/posts");
+            await api.delete(`/delete/comment/${editComment._id}`);
+            const updatedUser = await api.get(`/user/${user._id}`);
+            const updatedPosts = await api.get("/get/posts");
             setPosts(updatedPosts.data);
             setUser(updatedUser.data);
             handleShowUserProfilePage();

@@ -1,8 +1,7 @@
 
 import React, { useContext, useState } from "react";
 import { PhredditContext } from "./context";
-import { arrayOfPostCommentsTime } from "../helperFunctions";
-import axios from 'axios';
+import api from '../api';
 import ConfirmWindow from "./confirm";
 
 function RegisterPageView() {
@@ -163,7 +162,7 @@ function SubmitButton() {
             setShowConfirm(true);
         } else {
             try {
-                const response = await axios.post("http://127.0.0.1:8000/register", {
+                const response = await api.post("/register", {
                     firstName: firstName,
                     lastName: lastName,
                     displayName: displayName,

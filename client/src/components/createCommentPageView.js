@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { PhredditContext } from "./context";
-import axios from 'axios';
+import api from '../api';
 
 function CreateCommentPageView() {
     const { showPageFunctions: { currentPage } } = useContext(PhredditContext);
@@ -95,7 +95,7 @@ function SubmitButton() {
             window.alert(build);
         } else {
             try {
-                const response = await axios.post("http://127.0.0.1:8000/addcomment", {
+                const response = await api.post("/addcomment", {
                     content: comment_content,
                     commentedBy: user,
                     commentedDate: new Date(),
@@ -106,18 +106,18 @@ function SubmitButton() {
                 // console.log("New Comment Data: "+ response.data)
                 // const newComment = response.data;
 
-                const updatedComments = await axios.get("http://127.0.0.1:8000/get/comments");
+                const updatedComments = await api.get("/get/comments");
                 setComments(updatedComments.data);
                 setCommentIDs(comments.map(comment => comment._id));
               
-                const updatedPostResponse = await axios.get(`http://127.0.0.1:8000/posts/${post._id}`);
+                const updatedPostResponse = await api.get(`/posts/${post._id}`);
                 setPost(updatedPostResponse.data);
                 showPost(updatedPostResponse.data);
                 setRefreshTrigger(prev => !prev);
                 
                 const [usersRes, updatedUserResponse] = await Promise.all([
-                    axios.get("http://127.0.0.1:8000/get/users"),
-                    axios.get(`http://127.0.0.1:8000/user/${user._id}`)
+                    api.get("/get/users"),
+                    api.get(`/user/${user._id}`)
                   ]);
                 setUsers(usersRes.data);
                 setUser(updatedUserResponse.data);

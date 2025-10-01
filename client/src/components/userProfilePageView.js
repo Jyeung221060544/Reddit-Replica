@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { arrayOfPostCommentsTime, findCommunity, getTimeAgo, getPostHeadingUser, getCommentHeading, getCommunityHeading, getUserHeading, findPostOfComment } from "../helperFunctions";
 import { PhredditContext } from "./context";
 import ConfirmWindow from "./confirm";
-import axios from "axios";
+import api from '../api';
 
 function UserProfilePageView() {
     const {
@@ -279,10 +279,10 @@ function UserItem({cUser}) {
               method: "DELETE"
             });
             if (res.ok) {
-                const updatedCommunities = await axios.get("http://127.0.0.1:8000/get/communities");
-                const updatedUsers = await axios.get("http://127.0.0.1:8000/get/users");
-                const updatedPosts = await axios.get("http://127.0.0.1:8000/get/posts");
-                const updatedComments = await axios.get("http://127.0.0.1:8000/get/comments");
+                const updatedCommunities = await api.get("/get/communities");
+                const updatedUsers = await api.get("/get/users");
+                const updatedPosts = await api.get("/get/posts");
+                const updatedComments = await api.get("/get/comments");
                 setUsers(updatedUsers.data);
                 setCommunities(updatedCommunities.data);
                 setComments(updatedComments.data);

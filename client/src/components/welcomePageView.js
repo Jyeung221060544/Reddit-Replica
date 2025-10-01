@@ -1,8 +1,6 @@
 import React, { useContext } from "react";
 import { PhredditContext } from "./context";
 
-import axios from 'axios';
-
 function WelcomePageView() {
     const {
         showPageFunctions: { currentPage }
