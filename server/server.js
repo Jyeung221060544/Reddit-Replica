@@ -1,6 +1,8 @@
 // Run this script to launch the server.
 // The server should run on localhost port 8000.
 // This is where you should start writing server-side code for this application.
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -12,23 +14,38 @@ const Comment = require('./models/comments');
 const LinkFlair = require('./models/linkflairs');
 const User = require('./models/users');
 
-const mongoDB = 'mongodb://127.0.0.1:27017/phreddit';
+// --- ✅ Deployment-ready config ---
+const PORT = process.env.PORT || 8000;
+const mongoDB = process.env.MONGODB_URI;
+if (!mongoDB) {
+  console.error('MONGODB_URI is not set!');
+  process.exit(1);
+}
 
-mongoose.connect(mongoDB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+const allowedOrigins = process.env.CLIENT_ORIGIN
+  ? process.env.CLIENT_ORIGIN.split(',').map(s => s.trim())
+  : ['http://localhost:3000']; // dev default
 
-
+// --- ✅ Connect to MongoDB (local OR Atlas from MONGODB_URI) ---
+mongoose.connect(mongoDB);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-db.once('open', () => {
-    console.log('Connected to MongoDB.');
-});
+db.once('open', () => console.log('Connected to MongoDB.'));
 
+// --- App + middleware ---
 const app = express();
-app.use(cors());
+app.set('trust proxy', 1); // plays nice with Render/Heroku proxies
 app.use(express.json());
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      // Allow non-browser tools (no Origin) and listed frontends
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error('CORS blocked'));
+    },
+    credentials: true,
+  })
+);
 
 app.get("/", function (req, res) {
     console.log("Get request received at '/'");
@@ -735,4 +752,5 @@ app.delete("/delete/post/:id", async (req, res) => {
 
 
 
-app.listen(8000, () => {console.log("Server listening on port 8000...");});
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}...`));
+

@@ -1,5 +1,4 @@
 import {useState, useEffect} from 'react';
-import axios from 'axios';
 import { Banner } from './banner.js';
 import { NavBar } from './nav.js';
 import { HomePageView } from './homePageView.js'
@@ -18,15 +17,17 @@ import { UserProfilePageView } from './userProfilePageView.js';
 import { EditComment } from './editComment.js';
 import { EditCommunity } from './editCommunity.js';
 import { EditPost } from './editPost.js';
+import api from '../api';
+
 
 async function fetchData(setPosts, setCommunities, setComments, setLinkFlairs, setUsers) {
   try {
     const [postsRes, communitiesRes, commentsRes, flairsRes, usersRes] = await Promise.all([
-      axios.get("http://127.0.0.1:8000/get/posts"),
-      axios.get("http://127.0.0.1:8000/get/communities"),
-      axios.get("http://127.0.0.1:8000/get/comments"),
-      axios.get("http://127.0.0.1:8000/get/linkflairs"),
-      axios.get("http://127.0.0.1:8000/get/users"),
+      api.get("/get/posts"),
+      api.get("/get/communities"),
+      api.get("/get/comments"),
+      api.get("/get/linkflairs"),
+      api.get("/get/users"),
     ]);
 
     setPosts(postsRes.data);
@@ -88,7 +89,7 @@ export default function Phreddit() {
     if (!post) return;
     post.views++;
     // console.log(post);
-    await axios.post("http://127.0.0.1:8000/updateViews", {
+    await api.post("/updateViews", {
       views: post.views,
       postID: post._id
     });
