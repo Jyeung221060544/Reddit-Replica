@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { PhredditContext } from "./context";
 import { arrayOfPostCommentsTime } from "../helperFunctions";
-import axios from 'axios';
+import api from '../api';
 import ConfirmWindow from "./confirm";
 
 function LoginPageView() {
@@ -78,7 +78,7 @@ function SubmitButton() {
         document.getElementById("login-password-input").value = "";
 
         try {
-            const response = await axios.post("http://localhost:8000/login", {
+            const response = await api.post("/login", {
                 email,
                 password
             });
